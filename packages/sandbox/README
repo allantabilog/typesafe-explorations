@@ -1,0 +1,44 @@
+# Sandbox Project
+
+This is a sandbox project for exploring TypeScript's type-safe features.
+
+## Setup
+
+This project is configured with:
+- **TypeScript** - Type-safe JavaScript with strict settings
+- **Jest** - Testing framework with TypeScript support
+- **ESLint** - Code linting and quality checks
+- **npm** - Package management
+
+## Available Scripts
+
+- `npm run build` - Compile TypeScript to JavaScript
+- `npm run dev` - Watch mode for development
+- `npm test` - Run Jest tests
+- `npm run test:watch` - Run tests in watch mode
+- `npm run test:coverage` - Run tests with coverage report
+- `npm run lint` - Run ESLint checks
+- `npm run lint:fix` - Run ESLint with auto-fix
+- `npm run clean` - Remove built files
+
+## Project Structure
+
+```
+src/
+├── index.ts          # Main source file with example functions
+└── index.test.ts     # Test file
+```
+
+The project demonstrates:
+- Type-safe function definitions
+- Union types
+- Generic types and interfaces
+- Comprehensive testing with Jest
+- Strict TypeScript configuration for maximum type safety
+
+## Getting Started
+
+1. Install dependencies: `npm install`
+2. Build the project: `npm run build`
+3. Run tests: `npm test`
+4. Start developing with watch mode: `npm run dev`
