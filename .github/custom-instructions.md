@@ -17,4 +17,4 @@ and the source code for each project is under
 - Node.js
 
 # Coding standards
-We will implement coding standards using lint tools like `eslint`
+We will implement coding standards using lint tools like `eslint
