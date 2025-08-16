@@ -1,0 +1,25 @@
+{
+  "name": "ldap-explorer",
+  "version": "1.0.0",
+  "description": "A TypeScript project to explore the ldapts module with an OpenLDAP instance.",
+  "main": "src/app.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/app.js",
+    "dev": "ts-node src/app.ts"
+  },
+  "dependencies": {
+    "ldapts": "^2.3.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.5.0",
+    "ts-node": "^10.0.0",
+    "@types/node": "^16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/ldap-explorer.git"
+  },
+  "author": "Your Name",
+  "license": "MIT"
+}
