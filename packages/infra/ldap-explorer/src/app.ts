@@ -72,25 +72,25 @@ class LdapClient {
         attributes: {
           objectClass: ["organizationalUnit"],
           ou: "People",
-          description: "Container for user accounts"
-        }
+          description: "Container for user accounts",
+        },
       },
       {
-        dn: "ou=Groups,dc=example,dc=org", 
+        dn: "ou=Groups,dc=example,dc=org",
         attributes: {
           objectClass: ["organizationalUnit"],
           ou: "Groups",
-          description: "Container for group objects"
-        }
+          description: "Container for group objects",
+        },
       },
       {
         dn: "ou=Applications,dc=example,dc=org",
         attributes: {
           objectClass: ["organizationalUnit"],
           ou: "Applications",
-          description: "Container for application accounts"
-        }
-      }
+          description: "Container for application accounts",
+        },
+      },
     ];
 
     // Create sample users
@@ -107,23 +107,23 @@ class LdapClient {
           userPassword: "password123",
           employeeNumber: "1001",
           title: "Software Engineer",
-          departmentNumber: "Engineering"
-        }
+          departmentNumber: "Engineering",
+        },
       },
       {
         dn: "cn=Jane Smith,ou=People,dc=example,dc=org",
         attributes: {
           objectClass: ["inetOrgPerson"],
           cn: "Jane Smith",
-          sn: "Smith", 
+          sn: "Smith",
           givenName: "Jane",
           mail: "jane.smith@example.org",
           uid: "jsmith",
           userPassword: "password456",
           employeeNumber: "1002",
           title: "Product Manager",
-          departmentNumber: "Product"
-        }
+          departmentNumber: "Product",
+        },
       },
       {
         dn: "cn=Bob Wilson,ou=People,dc=example,dc=org",
@@ -131,15 +131,15 @@ class LdapClient {
           objectClass: ["inetOrgPerson"],
           cn: "Bob Wilson",
           sn: "Wilson",
-          givenName: "Bob", 
+          givenName: "Bob",
           mail: "bob.wilson@example.org",
           uid: "bwilson",
           userPassword: "password789",
           employeeNumber: "1003",
           title: "DevOps Engineer",
-          departmentNumber: "Engineering"
-        }
-      }
+          departmentNumber: "Engineering",
+        },
+      },
     ];
 
     // Create sample groups
@@ -152,21 +152,21 @@ class LdapClient {
           description: "System administrators group",
           member: [
             "cn=John Doe,ou=People,dc=example,dc=org",
-            "cn=Bob Wilson,ou=People,dc=example,dc=org"
-          ]
-        }
+            "cn=Bob Wilson,ou=People,dc=example,dc=org",
+          ],
+        },
       },
       {
-        dn: "cn=Engineering,ou=Groups,dc=example,dc=org", 
+        dn: "cn=Engineering,ou=Groups,dc=example,dc=org",
         attributes: {
           objectClass: ["groupOfNames"],
           cn: "Engineering",
           description: "Engineering team group",
           member: [
             "cn=John Doe,ou=People,dc=example,dc=org",
-            "cn=Bob Wilson,ou=People,dc=example,dc=org"
-          ]
-        }
+            "cn=Bob Wilson,ou=People,dc=example,dc=org",
+          ],
+        },
       },
       {
         dn: "cn=AllUsers,ou=Groups,dc=example,dc=org",
@@ -176,11 +176,11 @@ class LdapClient {
           description: "All company users",
           member: [
             "cn=John Doe,ou=People,dc=example,dc=org",
-            "cn=Jane Smith,ou=People,dc=example,dc=org", 
-            "cn=Bob Wilson,ou=People,dc=example,dc=org"
-          ]
-        }
-      }
+            "cn=Jane Smith,ou=People,dc=example,dc=org",
+            "cn=Bob Wilson,ou=People,dc=example,dc=org",
+          ],
+        },
+      },
     ];
 
     try {
@@ -215,7 +215,6 @@ class LdapClient {
       }
 
       console.log("🎉 Sample data creation completed!");
-      
     } catch (error) {
       console.error("❌ Error creating sample data:", error);
     }
@@ -223,7 +222,10 @@ class LdapClient {
 
   async searchUsers() {
     console.log("\n👥 Searching for all users:");
-    const users = await this.search("ou=People,dc=example,dc=org", "(objectClass=inetOrgPerson)");
+    const users = await this.search(
+      "ou=People,dc=example,dc=org",
+      "(objectClass=inetOrgPerson)"
+    );
     users.searchEntries.forEach((user, index) => {
       console.log(`${index + 1}. ${user.cn} (${user.uid})`);
       console.log(`   Email: ${user.mail}`);
@@ -236,16 +238,23 @@ class LdapClient {
 
   async searchGroups() {
     console.log("\n👨‍👩‍👧‍👦 Searching for all groups:");
-    const groups = await this.search("ou=Groups,dc=example,dc=org", "(objectClass=groupOfNames)");
+    const groups = await this.search(
+      "ou=Groups,dc=example,dc=org",
+      "(objectClass=groupOfNames)"
+    );
     groups.searchEntries.forEach((group, index) => {
       console.log(`${index + 1}. ${group.cn}`);
       console.log(`   Description: ${group.description}`);
-      console.log(`   Members: ${Array.isArray(group.member) ? group.member.length : 1}`);
+      console.log(
+        `   Members: ${Array.isArray(group.member) ? group.member.length : 1}`
+      );
       if (group.member) {
-        const members = Array.isArray(group.member) ? group.member : [group.member];
-        members.forEach(member => {
+        const members = Array.isArray(group.member)
+          ? group.member
+          : [group.member];
+        members.forEach((member) => {
           const memberStr = member.toString();
-          const cn = memberStr.split(',')[0].replace('cn=', '');
+          const cn = memberStr.split(",")[0].replace("cn=", "");
           console.log(`     - ${cn}`);
         });
       }
@@ -313,8 +322,9 @@ async function main() {
     await ldapClient.searchByFilter("(title=*Engineer*)");
     await ldapClient.searchByFilter("(departmentNumber=Engineering)");
     await ldapClient.searchByFilter("(mail=*@example.org)");
-    await ldapClient.searchByFilter("(&(objectClass=inetOrgPerson)(givenName=J*))");
-    
+    await ldapClient.searchByFilter(
+      "(&(objectClass=inetOrgPerson)(givenName=J*))"
+    );
   } catch (error) {
     console.error("❌ Error:", error);
   } finally {

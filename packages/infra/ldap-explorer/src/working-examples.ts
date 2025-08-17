@@ -40,54 +40,67 @@ class WorkingLdapExamples {
 
     // 1. Search by exact attribute match
     console.log("\n1. Find users with title 'Software Engineer':");
-    const engineers = await this.client.search(baseDN, { filter: "(title=Software Engineer)" });
-    engineers.searchEntries.forEach(entry => {
+    const engineers = await this.client.search(baseDN, {
+      filter: "(title=Software Engineer)",
+    });
+    engineers.searchEntries.forEach((entry) => {
       console.log(`   - ${entry.cn} (${entry.mail})`);
     });
 
     // 2. Search using wildcards
     console.log("\n2. Find users with names starting with 'J':");
     const jNames = await this.client.search(baseDN, { filter: "(cn=J*)" });
-    jNames.searchEntries.forEach(entry => {
+    jNames.searchEntries.forEach((entry) => {
       console.log(`   - ${entry.cn} (${entry.uid})`);
     });
 
     // 3. Complex AND filter
-    console.log("\n3. Find users in Engineering department with Engineer title:");
-    const engineeringEngineers = await this.client.search(baseDN, { 
-      filter: "(&(objectClass=inetOrgPerson)(departmentNumber=Engineering)(title=*Engineer*))"
+    console.log(
+      "\n3. Find users in Engineering department with Engineer title:"
+    );
+    const engineeringEngineers = await this.client.search(baseDN, {
+      filter:
+        "(&(objectClass=inetOrgPerson)(departmentNumber=Engineering)(title=*Engineer*))",
     });
-    engineeringEngineers.searchEntries.forEach(entry => {
-      console.log(`   - ${entry.cn}: ${entry.title} in ${entry.departmentNumber}`);
+    engineeringEngineers.searchEntries.forEach((entry) => {
+      console.log(
+        `   - ${entry.cn}: ${entry.title} in ${entry.departmentNumber}`
+      );
     });
 
     // 4. OR filter
     console.log("\n4. Find users named John OR Jane:");
-    const johnOrJane = await this.client.search(baseDN, { 
-      filter: "(|(givenName=John)(givenName=Jane))"
+    const johnOrJane = await this.client.search(baseDN, {
+      filter: "(|(givenName=John)(givenName=Jane))",
     });
-    johnOrJane.searchEntries.forEach(entry => {
+    johnOrJane.searchEntries.forEach((entry) => {
       console.log(`   - ${entry.givenName} ${entry.sn} (${entry.mail})`);
     });
 
     // 5. NOT filter
     console.log("\n5. Find users NOT in Engineering department:");
-    const nonEngineering = await this.client.search(baseDN, { 
-      filter: "(&(objectClass=inetOrgPerson)(!(departmentNumber=Engineering)))"
+    const nonEngineering = await this.client.search(baseDN, {
+      filter: "(&(objectClass=inetOrgPerson)(!(departmentNumber=Engineering)))",
     });
-    nonEngineering.searchEntries.forEach(entry => {
-      console.log(`   - ${entry.cn}: ${entry.title} in ${entry.departmentNumber}`);
+    nonEngineering.searchEntries.forEach((entry) => {
+      console.log(
+        `   - ${entry.cn}: ${entry.title} in ${entry.departmentNumber}`
+      );
     });
 
     // 6. Presence filter (has attribute)
     console.log("\n6. Find entries that have an email address:");
     const withEmail = await this.client.search(baseDN, { filter: "(mail=*)" });
-    console.log(`   Found ${withEmail.searchEntries.length} entries with email addresses`);
+    console.log(
+      `   Found ${withEmail.searchEntries.length} entries with email addresses`
+    );
 
     // 7. Substring search
     console.log("\n7. Find entries with 'example.org' in email:");
-    const orgEmails = await this.client.search(baseDN, { filter: "(mail=*example.org*)" });
-    orgEmails.searchEntries.forEach(entry => {
+    const orgEmails = await this.client.search(baseDN, {
+      filter: "(mail=*example.org*)",
+    });
+    orgEmails.searchEntries.forEach((entry) => {
       console.log(`   - ${entry.cn}: ${entry.mail}`);
     });
   }
@@ -98,25 +111,31 @@ class WorkingLdapExamples {
 
     console.log("\n👥 Group Membership Analysis:");
 
-    const groups = await this.client.search("ou=Groups,dc=example,dc=org", { filter: "(objectClass=groupOfNames)" });
-    
+    const groups = await this.client.search("ou=Groups,dc=example,dc=org", {
+      filter: "(objectClass=groupOfNames)",
+    });
+
     for (const group of groups.searchEntries) {
       console.log(`\n📋 Group: ${group.cn}`);
       console.log(`   Description: ${group.description}`);
-      
+
       if (group.member) {
-        const members = Array.isArray(group.member) ? group.member : [group.member];
+        const members = Array.isArray(group.member)
+          ? group.member
+          : [group.member];
         console.log(`   Members (${members.length}):`);
-        
+
         for (const memberDN of members) {
           try {
-            const memberSearch = await this.client.search(memberDN.toString(), { 
-              filter: "(objectClass=*)", 
-              scope: "base" 
+            const memberSearch = await this.client.search(memberDN.toString(), {
+              filter: "(objectClass=*)",
+              scope: "base",
             });
             if (memberSearch.searchEntries.length > 0) {
               const member = memberSearch.searchEntries[0];
-              console.log(`     - ${member.cn} (${member.mail}) - ${member.title}`);
+              console.log(
+                `     - ${member.cn} (${member.mail}) - ${member.title}`
+              );
             }
           } catch (error) {
             console.log(`     - ${memberDN} (could not resolve details)`);
@@ -133,12 +152,12 @@ class WorkingLdapExamples {
     if (!this.client) throw new Error("Not connected");
 
     const testUserDN = "cn=Test User,ou=People,dc=example,dc=org";
-    
+
     // Check if user already exists
     try {
-      const existing = await this.client.search(testUserDN, { 
-        filter: "(objectClass=*)", 
-        scope: "base" 
+      const existing = await this.client.search(testUserDN, {
+        filter: "(objectClass=*)",
+        scope: "base",
       });
       if (existing.searchEntries.length > 0) {
         console.log("⚠️  Test user already exists, skipping creation");
@@ -159,7 +178,7 @@ class WorkingLdapExamples {
         userPassword: "testpass123",
         employeeNumber: "9999",
         title: "Test Engineer",
-        departmentNumber: "Testing"
+        departmentNumber: "Testing",
       });
       console.log("✅ Created test user successfully");
       return testUserDN;
@@ -174,7 +193,7 @@ class WorkingLdapExamples {
     if (!this.client) throw new Error("Not connected");
 
     const testUserDN = "cn=Test User,ou=People,dc=example,dc=org";
-    
+
     try {
       await this.client.del(testUserDN);
       console.log("✅ Deleted test user successfully");
@@ -188,25 +207,35 @@ class WorkingLdapExamples {
     if (!this.client) throw new Error("Not connected");
 
     console.log("\n🔍 Compare Operations:");
-    
+
     const johnDN = "cn=John Doe,ou=People,dc=example,dc=org";
-    
+
     // Test various comparisons
     const comparisons = [
-      { attribute: 'cn', value: 'John Doe' },
-      { attribute: 'sn', value: 'Doe' },
-      { attribute: 'givenName', value: 'John' },
-      { attribute: 'mail', value: 'john.doe@example.org' },
-      { attribute: 'title', value: 'Software Engineer' },
-      { attribute: 'title', value: 'Manager' }, // This should be false
+      { attribute: "cn", value: "John Doe" },
+      { attribute: "sn", value: "Doe" },
+      { attribute: "givenName", value: "John" },
+      { attribute: "mail", value: "john.doe@example.org" },
+      { attribute: "title", value: "Software Engineer" },
+      { attribute: "title", value: "Manager" }, // This should be false
     ];
 
     for (const comp of comparisons) {
       try {
-        const result = await this.client.compare(johnDN, comp.attribute, comp.value);
-        console.log(`   ${comp.attribute}='${comp.value}': ${result ? '✅ Match' : '❌ No match'}`);
+        const result = await this.client.compare(
+          johnDN,
+          comp.attribute,
+          comp.value
+        );
+        console.log(
+          `   ${comp.attribute}='${comp.value}': ${
+            result ? "✅ Match" : "❌ No match"
+          }`
+        );
       } catch (error: any) {
-        console.log(`   ${comp.attribute}='${comp.value}': ⚠️ Error - ${error.message}`);
+        console.log(
+          `   ${comp.attribute}='${comp.value}': ⚠️ Error - ${error.message}`
+        );
       }
     }
   }
@@ -214,7 +243,7 @@ class WorkingLdapExamples {
 
 async function demonstrateWorkingOperations() {
   const explorer = new WorkingLdapExamples();
-  
+
   try {
     await explorer.connect();
     console.log("🔗 Connected to LDAP server");
@@ -223,10 +252,21 @@ async function demonstrateWorkingOperations() {
     console.log("\n🔐 Testing Authentication:");
     const johnDN = "cn=John Doe,ou=People,dc=example,dc=org";
     const authResult = await explorer.authenticateUser(johnDN, "password123");
-    console.log(`John Doe auth with correct password: ${authResult ? '✅ Success' : '❌ Failed'}`);
-    
-    const wrongAuthResult = await explorer.authenticateUser(johnDN, "wrongpass");
-    console.log(`John Doe auth with wrong password: ${wrongAuthResult ? '✅ Success' : '❌ Failed (expected)'}`);
+    console.log(
+      `John Doe auth with correct password: ${
+        authResult ? "✅ Success" : "❌ Failed"
+      }`
+    );
+
+    const wrongAuthResult = await explorer.authenticateUser(
+      johnDN,
+      "wrongpass"
+    );
+    console.log(
+      `John Doe auth with wrong password: ${
+        wrongAuthResult ? "✅ Success" : "❌ Failed (expected)"
+      }`
+    );
 
     // Demonstrate various search operations
     await explorer.searchOperations();
@@ -237,18 +277,22 @@ async function demonstrateWorkingOperations() {
     // Create, test, and delete a user
     console.log("\n🛠️ User Lifecycle (Create/Delete):");
     const testUserDN = await explorer.createTestUser();
-    
+
     // Test authentication with the new user
     if (testUserDN) {
-      const testAuth = await explorer.authenticateUser(testUserDN, "testpass123");
-      console.log(`Test user authentication: ${testAuth ? '✅ Success' : '❌ Failed'}`);
+      const testAuth = await explorer.authenticateUser(
+        testUserDN,
+        "testpass123"
+      );
+      console.log(
+        `Test user authentication: ${testAuth ? "✅ Success" : "❌ Failed"}`
+      );
     }
-    
+
     await explorer.deleteTestUser();
 
     // Demonstrate compare operations
     await explorer.demonstrateCompare();
-
   } catch (error: any) {
     console.error("❌ Error:", error.message);
   } finally {

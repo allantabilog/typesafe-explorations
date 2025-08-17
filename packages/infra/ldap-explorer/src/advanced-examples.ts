@@ -46,62 +46,66 @@ class AdvancedLdapExplorer {
 
   // Add user to group
   async addUserToGroup(userDN: string, groupDN: string) {
-    const { Change } = require('ldapts');
+    const { Change } = require("ldapts");
     const changes = new Change({
-      operation: 'add',
+      operation: "add",
       modification: {
-        member: [userDN]
-      }
+        member: [userDN],
+      },
     });
     return await this.modifyUser(groupDN, changes);
   }
 
   // Remove user from group
   async removeUserFromGroup(userDN: string, groupDN: string) {
-    const { Change } = require('ldapts');
+    const { Change } = require("ldapts");
     const changes = new Change({
-      operation: 'delete',
+      operation: "delete",
       modification: {
-        member: [userDN]
-      }
+        member: [userDN],
+      },
     });
     return await this.modifyUser(groupDN, changes);
   }
 
   // Search with paging (for large result sets)
-  async searchWithPaging(searchBase: string, filter: string, pageSize: number = 10) {
+  async searchWithPaging(
+    searchBase: string,
+    filter: string,
+    pageSize: number = 10
+  ) {
     if (!this.client) throw new Error("Not connected");
-    
+
     const searchOptions = {
-      scope: 'sub' as const,
+      scope: "sub" as const,
       filter,
       paged: {
         pageSize,
         pagePause: false,
-      }
+      },
     };
 
     const allEntries: any[] = [];
     const searchResult = await this.client.search(searchBase, searchOptions);
-    
+
     allEntries.push(...searchResult.searchEntries);
-    
+
     return {
       entries: allEntries,
-      total: allEntries.length
+      total: allEntries.length,
     };
   }
 
   // Get schema information
   async getSchema() {
     if (!this.client) throw new Error("Not connected");
-    
-    const schemaSearch = await this.client.search('cn=Subschema', {
-      scope: 'base',
-      filter: '(objectClass=*)',
-      attributes: ['objectClasses', 'attributeTypes', 'matchingRules']
+
+    const schemaSearch = await this.client.search("cn=Subschema", {
+      scope: "base",
+      filter: "(objectClass=*)",
+      attributes: ["objectClasses", "attributeTypes", "matchingRules"],
     });
-    
+
     return schemaSearch.searchEntries[0];
   }
 
@@ -114,7 +118,7 @@ class AdvancedLdapExplorer {
 
 async function demonstrateAdvancedOperations() {
   const explorer = new AdvancedLdapExplorer();
-  
+
   try {
     await explorer.connect();
     console.log("🔗 Connected to LDAP server");
@@ -122,25 +126,34 @@ async function demonstrateAdvancedOperations() {
     // Test user authentication
     console.log("\n🔐 Testing user authentication:");
     const johnDN = "cn=John Doe,ou=People,dc=example,dc=org";
-    const isAuthenticated = await explorer.authenticateUser(johnDN, "password123");
-    console.log(`John Doe authentication: ${isAuthenticated ? '✅ Success' : '❌ Failed'}`);
+    const isAuthenticated = await explorer.authenticateUser(
+      johnDN,
+      "password123"
+    );
+    console.log(
+      `John Doe authentication: ${isAuthenticated ? "✅ Success" : "❌ Failed"}`
+    );
 
     // Test wrong password
     const wrongAuth = await explorer.authenticateUser(johnDN, "wrongpassword");
-    console.log(`Wrong password test: ${wrongAuth ? '✅ Success' : '❌ Failed (expected)'}`);
+    console.log(
+      `Wrong password test: ${
+        wrongAuth ? "✅ Success" : "❌ Failed (expected)"
+      }`
+    );
 
     // Modify user attribute using Change class
     console.log("\n✏️ Modifying user attributes:");
-    const { Change } = require('ldapts');
-    
+    const { Change } = require("ldapts");
+
     // Update title
     const titleChange = new Change({
-      operation: 'replace',
+      operation: "replace",
       modification: {
-        title: ['Senior Software Engineer']
-      }
+        title: ["Senior Software Engineer"],
+      },
     });
-    
+
     try {
       await explorer.modifyUser(johnDN, titleChange);
       console.log("✅ Updated John Doe's title");
@@ -150,12 +163,12 @@ async function demonstrateAdvancedOperations() {
 
     // Add phone number
     const phoneChange = new Change({
-      operation: 'add',
+      operation: "add",
       modification: {
-        telephoneNumber: ['+1-555-0123']
-      }
+        telephoneNumber: ["+1-555-0123"],
+      },
     });
-    
+
     try {
       await explorer.modifyUser(johnDN, phoneChange);
       console.log("✅ Added phone number to John Doe");
@@ -165,12 +178,20 @@ async function demonstrateAdvancedOperations() {
 
     // Search with paging
     console.log("\n📄 Searching with paging:");
-    const pagedResults = await explorer.searchWithPaging(baseDN, "(objectClass=*)", 5);
+    const pagedResults = await explorer.searchWithPaging(
+      baseDN,
+      "(objectClass=*)",
+      5
+    );
     console.log(`Found ${pagedResults.total} entries with page size 5`);
 
     // Compare attribute
     console.log("\n🔍 Comparing attributes:");
-    const titleMatch = await explorer.compareAttribute(johnDN, 'title', 'Senior Software Engineer');
+    const titleMatch = await explorer.compareAttribute(
+      johnDN,
+      "title",
+      "Senior Software Engineer"
+    );
     console.log(`Title comparison result: ${titleMatch}`);
 
     // Get schema info (basic info only)
@@ -186,14 +207,15 @@ async function demonstrateAdvancedOperations() {
     console.log("\n👥 Group management:");
     const janeDN = "cn=Jane Smith,ou=People,dc=example,dc=org";
     const engineeringGroupDN = "cn=Engineering,ou=Groups,dc=example,dc=org";
-    
+
     try {
       await explorer.addUserToGroup(janeDN, engineeringGroupDN);
       console.log("✅ Added Jane to Engineering group");
     } catch (error) {
-      console.log("⚠️  Jane might already be in the group or group modification failed");
+      console.log(
+        "⚠️  Jane might already be in the group or group modification failed"
+      );
     }
-
   } catch (error) {
     console.error("❌ Error:", error);
   } finally {

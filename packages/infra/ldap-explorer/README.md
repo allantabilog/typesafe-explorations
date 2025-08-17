@@ -55,11 +55,13 @@ dc=example,dc=org (root)
 ## Sample Data
 
 ### Users
+
 - **John Doe** (`jdoe`) - Software Engineer, Engineering dept
-- **Jane Smith** (`jsmith`) - Product Manager, Product dept  
+- **Jane Smith** (`jsmith`) - Product Manager, Product dept
 - **Bob Wilson** (`bwilson`) - DevOps Engineer, Engineering dept
 
 ### Groups
+
 - **Administrators** - System administrators (John, Bob)
 - **Engineering** - Engineering team (John, Bob)
 - **AllUsers** - All company users (John, Jane, Bob)
@@ -69,18 +71,23 @@ dc=example,dc=org (root)
 The application demonstrates various LDAP operations:
 
 ### Basic Connection
+
 ```typescript
 const ldapClient = new LdapClient();
 await ldapClient.connect();
 ```
 
 ### Search Operations
+
 ```typescript
 // Search all entries
 await ldapClient.search(baseDN, "(objectClass=*)");
 
 // Search users only
-await ldapClient.search("ou=People,dc=example,dc=org", "(objectClass=inetOrgPerson)");
+await ldapClient.search(
+  "ou=People,dc=example,dc=org",
+  "(objectClass=inetOrgPerson)"
+);
 
 // Search with custom filters
 await ldapClient.searchByFilter("(title=*Engineer*)");
@@ -89,6 +96,7 @@ await ldapClient.searchByFilter("(&(objectClass=inetOrgPerson)(givenName=J*))");
 ```
 
 ### Adding Entries
+
 ```typescript
 await ldapClient.add("cn=New User,ou=People,dc=example,dc=org", {
   objectClass: ["inetOrgPerson"],
@@ -96,26 +104,27 @@ await ldapClient.add("cn=New User,ou=People,dc=example,dc=org", {
   sn: "User",
   givenName: "New",
   mail: "new.user@example.org",
-  uid: "nuser"
+  uid: "nuser",
 });
 ```
 
 ## LDAP Filter Examples
 
-| Filter | Description |
-|--------|-------------|
-| `(objectClass=*)` | All entries |
-| `(objectClass=inetOrgPerson)` | All users |
-| `(objectClass=groupOfNames)` | All groups |
-| `(cn=John*)` | Entries starting with "John" |
-| `(mail=*@example.org)` | All entries with example.org email |
-| `(title=*Engineer*)` | Entries with "Engineer" in title |
-| `(&(objectClass=inetOrgPerson)(departmentNumber=Engineering))` | Users in Engineering dept |
-| `(\|(givenName=John)(givenName=Jane))` | Users named John OR Jane |
+| Filter                                                         | Description                        |
+| -------------------------------------------------------------- | ---------------------------------- |
+| `(objectClass=*)`                                              | All entries                        |
+| `(objectClass=inetOrgPerson)`                                  | All users                          |
+| `(objectClass=groupOfNames)`                                   | All groups                         |
+| `(cn=John*)`                                                   | Entries starting with "John"       |
+| `(mail=*@example.org)`                                         | All entries with example.org email |
+| `(title=*Engineer*)`                                           | Entries with "Engineer" in title   |
+| `(&(objectClass=inetOrgPerson)(departmentNumber=Engineering))` | Users in Engineering dept          |
+| `(\|(givenName=John)(givenName=Jane))`                         | Users named John OR Jane           |
 
 ## Docker Configuration
 
 The OpenLDAP server is configured with:
+
 - **Base DN**: `dc=example,dc=org`
 - **Admin DN**: `cn=admin,dc=example,dc=org`
 - **Admin Password**: `admin`
@@ -125,6 +134,7 @@ The OpenLDAP server is configured with:
 ## Useful Commands
 
 ### Docker Management
+
 ```bash
 # Start LDAP server
 docker-compose -f docker/docker-compose.yml up -d
@@ -140,6 +150,7 @@ docker-compose -f docker/docker-compose.yml down -v
 ```
 
 ### LDAP Utilities (if installed)
+
 ```bash
 # Search using command line tools
 ldapsearch -x -H ldap://localhost:389 -D "cn=admin,dc=example,dc=org" -w admin -b "dc=example,dc=org"
@@ -151,20 +162,24 @@ ldapadd -x -H ldap://localhost:389 -D "cn=admin,dc=example,dc=org" -w admin -f s
 ## Advanced Exploration Ideas
 
 1. **Authentication Testing**
+
    - Test user authentication with `ldapClient.bind(userDN, userPassword)`
    - Implement password policies
 
 2. **CRUD Operations**
+
    - Add modify and delete operations
    - Update user attributes
    - Manage group memberships
 
 3. **Schema Exploration**
+
    - Query available object classes
    - Explore attribute types
    - Custom schema definitions
 
 4. **Performance Testing**
+
    - Bulk data creation
    - Search performance with indexes
    - Connection pooling
@@ -179,10 +194,12 @@ ldapadd -x -H ldap://localhost:389 -D "cn=admin,dc=example,dc=org" -w admin -f s
 ### Common Issues
 
 1. **Connection Refused**
+
    - Ensure Docker container is running: `docker-compose ps`
    - Check port availability: `netstat -ln | grep 389`
 
 2. **Invalid Credentials**
+
    - Verify admin password in docker-compose.yml
    - Check base DN configuration
 
@@ -191,6 +208,7 @@ ldapadd -x -H ldap://localhost:389 -D "cn=admin,dc=example,dc=org" -w admin -f s
    - Reset data with `docker-compose down -v`
 
 ### Reset Environment
+
 ```bash
 # Stop and remove all data
 docker-compose -f docker/docker-compose.yml down -v
