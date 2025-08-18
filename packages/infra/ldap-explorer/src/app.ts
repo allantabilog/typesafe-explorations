@@ -1,4 +1,5 @@
 import { Client } from 'ldapts';
+import { createSampleData } from './createSampleData';
 
 const ldapUrl = "ldap://localhost:389"; // Change this if your LDAP server is running on a different host or port
 const baseDN = "dc=example,dc=org"; // Updated to match docker-compose.yml domain
@@ -59,164 +60,6 @@ class LdapClient {
       return result.searchEntries.length > 0;
     } catch (error) {
       return false;
-    }
-  }
-
-  async createSampleData() {
-    console.log("\n🏗️  Creating sample LDAP data...");
-
-    // Create Organizational Units
-    const organizationalUnits = [
-      {
-        dn: "ou=People,dc=example,dc=org",
-        attributes: {
-          objectClass: ["organizationalUnit"],
-          ou: "People",
-          description: "Container for user accounts",
-        },
-      },
-      {
-        dn: "ou=Groups,dc=example,dc=org",
-        attributes: {
-          objectClass: ["organizationalUnit"],
-          ou: "Groups",
-          description: "Container for group objects",
-        },
-      },
-      {
-        dn: "ou=Applications,dc=example,dc=org",
-        attributes: {
-          objectClass: ["organizationalUnit"],
-          ou: "Applications",
-          description: "Container for application accounts",
-        },
-      },
-    ];
-
-    // Create sample users
-    const users = [
-      {
-        dn: "cn=John Doe,ou=People,dc=example,dc=org",
-        attributes: {
-          objectClass: ["inetOrgPerson"],
-          cn: "John Doe",
-          sn: "Doe",
-          givenName: "John",
-          mail: "john.doe@example.org",
-          uid: "jdoe",
-          userPassword: "password123",
-          employeeNumber: "1001",
-          title: "Software Engineer",
-          departmentNumber: "Engineering",
-        },
-      },
-      {
-        dn: "cn=Jane Smith,ou=People,dc=example,dc=org",
-        attributes: {
-          objectClass: ["inetOrgPerson"],
-          cn: "Jane Smith",
-          sn: "Smith",
-          givenName: "Jane",
-          mail: "jane.smith@example.org",
-          uid: "jsmith",
-          userPassword: "password456",
-          employeeNumber: "1002",
-          title: "Product Manager",
-          departmentNumber: "Product",
-        },
-      },
-      {
-        dn: "cn=Bob Wilson,ou=People,dc=example,dc=org",
-        attributes: {
-          objectClass: ["inetOrgPerson"],
-          cn: "Bob Wilson",
-          sn: "Wilson",
-          givenName: "Bob",
-          mail: "bob.wilson@example.org",
-          uid: "bwilson",
-          userPassword: "password789",
-          employeeNumber: "1003",
-          title: "DevOps Engineer",
-          departmentNumber: "Engineering",
-        },
-      },
-    ];
-
-    // Create sample groups
-    const groups = [
-      {
-        dn: "cn=Administrators,ou=Groups,dc=example,dc=org",
-        attributes: {
-          objectClass: ["groupOfNames"],
-          cn: "Administrators",
-          description: "System administrators group",
-          member: [
-            "cn=John Doe,ou=People,dc=example,dc=org",
-            "cn=Bob Wilson,ou=People,dc=example,dc=org",
-          ],
-        },
-      },
-      {
-        dn: "cn=Engineering,ou=Groups,dc=example,dc=org",
-        attributes: {
-          objectClass: ["groupOfNames"],
-          cn: "Engineering",
-          description: "Engineering team group",
-          member: [
-            "cn=John Doe,ou=People,dc=example,dc=org",
-            "cn=Bob Wilson,ou=People,dc=example,dc=org",
-          ],
-        },
-      },
-      {
-        dn: "cn=AllUsers,ou=Groups,dc=example,dc=org",
-        attributes: {
-          objectClass: ["groupOfNames"],
-          cn: "AllUsers",
-          description: "All company users",
-          member: [
-            "cn=John Doe,ou=People,dc=example,dc=org",
-            "cn=Jane Smith,ou=People,dc=example,dc=org",
-            "cn=Bob Wilson,ou=People,dc=example,dc=org",
-          ],
-        },
-      },
-    ];
-
-    try {
-      // Create OUs first
-      for (const ou of organizationalUnits) {
-        if (!(await this.entryExists(ou.dn))) {
-          await this.add(ou.dn, ou.attributes);
-          console.log(`✅ Created OU: ${ou.dn}`);
-        } else {
-          console.log(`⏭️  OU already exists: ${ou.dn}`);
-        }
-      }
-
-      // Create users
-      for (const user of users) {
-        if (!(await this.entryExists(user.dn))) {
-          await this.add(user.dn, user.attributes);
-          console.log(`✅ Created user: ${user.attributes.cn}`);
-        } else {
-          console.log(`⏭️  User already exists: ${user.attributes.cn}`);
-        }
-      }
-
-      // Create groups
-      for (const group of groups) {
-        if (!(await this.entryExists(group.dn))) {
-          await this.add(group.dn, group.attributes);
-          console.log(`✅ Created group: ${group.attributes.cn}`);
-        } else {
-          console.log(`⏭️  Group already exists: ${group.attributes.cn}`);
-        }
-      }
-
-      console.log("🎉 Sample data creation completed!");
-    } catch (error) {
-      console.error("❌ Error creating sample data:", error);
     }
   }
 
@@ -286,7 +129,7 @@ async function main() {
     console.log("✅ Connected to LDAP server successfully!");
 
     // Create sample data
-    await ldapClient.createSampleData();
+    await createSampleData();
 
     // Get the base DN info
     console.log("\n🔍 Searching base DN:", baseDN);
